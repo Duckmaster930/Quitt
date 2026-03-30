@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kollekt</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f5f4f0;
+      --bg2: #ffffff;
+      --bg3: #ebebе6;
+      --text: #1a1a18;
+      --text2: #6b6b66;
+      --border: rgba(0,0,0,0.12);
+      --border2: rgba(0,0,0,0.2);
+      --purple: #534AB7;
+      --purple-dark: #3C3489;
+      --purple-light: #CECBF6;
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .app {
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 5rem;
+    }
+
+    /* HEADER */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 24px;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+    .coins {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .coin-dot { width: 10px; height: 10px; border-radius: 50%; background: #EF9F27; }
+
+    /* TABS */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--bg2);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 1.5rem;
+      border: 0.5px solid var(--border);
+    }
+    .tab {
+      flex: 1;
+      padding: 9px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text2);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .tab.active {
+      background: var(--bg);
+      color: var(--text);
+      border: 0.5px solid var(--border2);
+    }
+
+    /* PACK AREA */
+    .pack-area { text-align: center; }
+    .pack-wrap {
+      display: inline-block;
+      margin: 1rem 0 1.5rem;
+      cursor: pointer;
+    }
+    .pack-img {
+      width: 160px;
+      height: 220px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #534AB7 0%, #3C3489 50%, #7F77DD 100%);
+      border: 2px solid #7F77DD;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .pack-img:hover { transform: translateY(-6px) rotate(-1.5deg); box-shadow: 0 20px 40px rgba(83,74,183,0.3); }
+    .pack-shine {
+      position: absolute;
+      top: -30px; left: -30px;
+      width: 80px; height: 200px;
+      background: rgba(255,255,255,0.1);
+      transform: rotate(25deg);
+      pointer-events: none;
+    }
+    .pack-label { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 11px; color: #CECBF6; letter-spacing: 3px; text-transform: uppercase; }
+    .pack-stars { color: #FAC775; font-size: 22px; letter-spacing: 3px; }
+    .pack-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 20px; color: #fff; }
+    .open-btn {
+      background: var(--purple);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 40px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      width: 100%;
+    }
+    .open-btn:hover { background: var(--purple-dark); }
+    .open-btn:active { transform: scale(0.98); }
+    .no-coins-msg { font-size: 13px; color: var(--text2); margin-top: 0.75rem; }
+
+    /* REVEAL */
+    .reveal-area { display: none; }
+    .reveal-area.show { display: block; }
+    .pack-area.hide { display: none; }
+    .reveal-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+    .card {
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+      aspect-ratio: 2/3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      animation: cardIn 0.4s ease both;
+    }
+    .card:nth-child(1) { animation-delay: 0.05s; }
+    .card:nth-child(2) { animation-delay: 0.18s; }
+    .card:nth-child(3) { animation-delay: 0.31s; }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.85); }
+      to   { opacity: 1; transform: none; }
+    }
+    .card.common    { background: linear-gradient(160deg, #D3D1C7, #B4B2A9); border: 1.5px solid #888780; }
+    .card.rare      { background: linear-gradient(160deg, #B5D4F4, #85B7EB); border: 1.5px solid #378ADD; }
+    .card.ultra     { background: linear-gradient(160deg, #CECBF6, #AFA9EC); border: 1.5px solid #7F77DD; }
+    .card.legendary { background: linear-gradient(160deg, #FAC775, #EF9F27); border: 2px solid #BA7517; }
+    .card-emoji { font-size: 30px; }
+    .card-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; color: rgba(0,0,0,0.75); line-height: 1.2; }
+    .rarity-badge { font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; padding: 2px 6px; border-radius: 4px; color: rgba(0,0,0,0.55); background: rgba(255,255,255,0.45); }
+
+    .again-btn {
+      background: var(--bg2);
+      color: var(--text);
+      border: 0.5px solid var(--border2);
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.15s;
+    }
+    .again-btn:hover { background: var(--bg); }
+
+    /* COLLECTION */
+    #tab-collection { display: none; }
+    .coll-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .coll-card {
+      border-radius: 12px;
+      padding: 10px 8px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      aspect-ratio: 2/3;
+    }
+    .coll-card.common    { background: linear-gradient(160deg, #D3D1C7, #B4B2A9); border: 1.5px solid #888780; }
+    .coll-card.rare      { background: linear-gradient(160deg, #B5D4F4, #85B7EB); border: 1.5px solid #378ADD; }
+    .coll-card.ultra     { background: linear-gradient(160deg, #CECBF6, #AFA9EC); border: 1.5px solid #7F77DD; }
+    .coll-card.legendary { background: linear-gradient(160deg, #FAC775, #EF9F27); border: 2px solid #BA7517; }
+    .coll-card.empty     { background: var(--bg2); border: 1.5px dashed var(--border); opacity: 0.4; }
+    .coll-count { font-size: 12px; color: var(--text2); text-align: center; margin-top: 0.75rem; }
+    .empty-coll { text-align: center; padding: 3rem 1rem; color: var(--text2); font-size: 14px; }
+    .empty-coll span { font-size: 40px; display: block; margin-bottom: 0.75rem; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <span class="logo">Kollekt</span>
+    <div class="coins">
+      <div class="coin-dot"></div>
+      <span id="coin-count">250</span>&nbsp;Coins
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('packs')">Packs</div>
+    <div class="tab" onclick="switchTab('collection')">Sammlung</div>
+  </div>
+
+  <!-- PACKS TAB -->
+  <div id="tab-packs">
+    <div class="pack-area" id="packArea">
+      <div class="pack-wrap" onclick="openPack()">
+        <div class="pack-img">
+          <div class="pack-shine"></div>
+          <div class="pack-label">Starter</div>
+          <div class="pack-stars">★★★</div>
+          <div class="pack-name">Mystery Pack</div>
+        </div>
+      </div>
+      <button class="open-btn" onclick="openPack()">Pack öffnen — 50 Coins</button>
+      <p class="no-coins-msg" id="noCoinMsg" style="display:none;">Nicht genug Coins!</p>
+    </div>
+
+    <div class="reveal-area" id="revealArea">
+      <div class="reveal-title">Du hast gezogen! ✨</div>
+      <div class="cards-grid" id="cardsGrid"></div>
+      <button class="again-btn" onclick="resetPack()">Nochmal öffnen</button>
+    </div>
+  </div>
+
+  <!-- COLLECTION TAB -->
+  <div id="tab-collection">
+    <div class="coll-grid" id="collGrid"></div>
+    <div class="coll-count" id="collCount"></div>
+  </div>
+</div>
+
+<script>
+  const CARDS = [
+    { name: "Feuerfuchs",  emoji: "🦊", rarity: "legendary" },
+    { name: "Eisdrache",   emoji: "🐉", rarity: "ultra" },
+    { name: "Mondkatze",   emoji: "🐱", rarity: "ultra" },
+    { name: "Sturmbär",    emoji: "🐻", rarity: "rare" },
+    { name: "Sandlöwe",    emoji: "🦁", rarity: "rare" },
+    { name: "Wasseradler", emoji: "🦅", rarity: "rare" },
+    { name: "Pilzelf",     emoji: "🍄", rarity: "common" },
+    { name: "Steinwolf",   emoji: "🐺", rarity: "common" },
+    { name: "Blattfrosch", emoji: "🐸", rarity: "common" },
+    { name: "Sandgecko",   emoji: "🦎", rarity: "common" },
+    { name: "Nebelschaf",  emoji: "🐑", rarity: "common" },
+    { name: "Kugelaal",    emoji: "🐠", rarity: "common" },
+  ];
+
+  const WEIGHTS = { legendary: 5, ultra: 15, rare: 25, common: 55 };
+  const PACK_COST = 50;
+  let coins = 250;
+  let collection = JSON.parse(localStorage.getItem('kollekt-collection') || '[]');
+
+  function save() {
+    localStorage.setItem('kollekt-collection', JSON.stringify(collection));
+  }
+
+  function weightedPick() {
+    const pool = [];
+    CARDS.forEach(c => { for (let i = 0; i < WEIGHTS[c.rarity]; i++) pool.push(c); });
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  function openPack() {
+    const msg = document.getElementById('noCoinMsg');
+    if (coins < PACK_COST) { msg.style.display = 'block'; return; }
+    msg.style.display = 'none';
+    coins -= PACK_COST;
+    document.getElementById('coin-count').textContent = coins;
+
+    const drawn = [weightedPick(), weightedPick(), weightedPick()];
+    drawn.forEach(c => collection.push(c));
+    save();
+
+    document.getElementById('cardsGrid').innerHTML = drawn.map(c => `
+      <div class="card ${c.rarity}">
+        <div class="card-emoji">${c.emoji}</div>
+        <div class="card-name">${c.name}</div>
+        <div class="rarity-badge">${c.rarity}</div>
+      </div>`).join('');
+
+    document.getElementById('packArea').classList.add('hide');
+    document.getElementById('revealArea').classList.add('show');
+  }
+
+  function resetPack() {
+    document.getElementById('packArea').classList.remove('hide');
+    document.getElementById('revealArea').classList.remove('show');
+  }
+
+  function renderCollection() {
+    const grid = document.getElementById('collGrid');
+    if (collection.length === 0) {
+      grid.innerHTML = '<div class="empty-coll" style="grid-column:1/-1"><span>🃏</span>Noch keine Karten.<br>Öffne dein erstes Pack!</div>';
+      document.getElementById('collCount').textContent = '';
+      return;
+    }
+    const sorted = [...collection].reverse();
+    grid.innerHTML = sorted.map(c => `
+      <div class="coll-card ${c.rarity}">
+        <div class="card-emoji">${c.emoji}</div>
+        <div class="card-name">${c.name}</div>
+        <div class="rarity-badge">${c.rarity}</div>
+      </div>`).join('');
+    document.getElementById('collCount').textContent = collection.length + ' Karten gesammelt';
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach((t, i) =>
+      t.classList.toggle('active', (tab === 'packs' && i === 0) || (tab === 'collection' && i === 1)));
+    document.getElementById('tab-packs').style.display = tab === 'packs' ? 'block' : 'none';
+    document.getElementById('tab-collection').style.display = tab === 'collection' ? 'block' : 'none';
+    if (tab === 'collection') renderCollection();
+  }
+</script>
+</body>
+</html>
